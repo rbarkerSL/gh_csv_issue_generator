@@ -13,7 +13,7 @@ def gen_issue_script(template:str, title:str, repo_list:list[str], project:str="
 
     print("Generating the Issue Gen shell script")
 
-    command:str = "gh issue create --repo [REPO] --title \"" + title + "\" --body-file " + template + "--project \"" + project + "\""
+    command:str = "gh issue create --repo [REPO] --title \"" + title + "\" --body-file " + template
     if project != "":
         command +=  " --project \"" + project + "\""
     if label != "":
