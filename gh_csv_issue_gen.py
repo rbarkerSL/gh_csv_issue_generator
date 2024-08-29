@@ -8,13 +8,16 @@ def parse_csv(csv:str) -> list[str]:
             repos.append(line.strip().replace(",","/"))
     return repos
 
-def gen_issue_script(template:str, title:str, repo_list:list[str]):
-    from datetime import datetime
+def gen_issue_script(template:str, title:str, repo_list:list[str], project:str="", label:str=""):
     from os import chmod
 
     print("Generating the Issue Gen shell script")
 
-    command:str = "gh issue create --repo [REPO] --title \"" + title + "\" --body-file " + template
+    command:str = "gh issue create --repo [REPO] --title \"" + title + "\" --body-file " + template + "--project \"" + project + "\""
+    if project != "":
+        command +=  " --project \"" + project + "\""
+    if label != "":
+        command += " --label \"" + label + "\""
     
     cmd_list:list[str] = []
 
@@ -46,6 +49,8 @@ def parse_audit_args() -> tuple[str,str]:
     parser.add_argument("-c","--csv-file",dest="csv_file",type=str,help="The csv file which specifies all required repositories for the template issue")
     parser.add_argument("-i","--issue-template",dest="issue_template",type=str,help="The template file for the issue generator script")
     parser.add_argument("-t","--title",dest="title",type=str,help="The title for the generated issue")
+    parser.add_argument("-p","--project",dest="project",type=str,help="(Optional) Project to assign issue to")
+    parser.add_argument("-l","--label",dest="label",type=str,help="Optional label to apply to issue")
     args = parser.parse_args()
 
     if args.csv_file is None or args.csv_file == "":
@@ -63,17 +68,27 @@ def parse_audit_args() -> tuple[str,str]:
     if args.title == None:
         raise RuntimeError("Must specify the title for the issue")
     
-    return args.csv_file, args.issue_template, args.title
+    label:str = ""
+    if args.label != None:
+        label = args.label
+    
+    project:str = ""
+    if args.project != None:
+        project = args.project
+    
+    return args.csv_file, args.issue_template, args.title, project, label
 
 def main():
     try:
         csv_name:str = ""
         issue_template:str = ""
         title:str = ""
-        csv_name, issue_template, title = parse_audit_args()
+        project:str = ""
+        label:str = ""
+        csv_name, issue_template, title, project, label = parse_audit_args()
         repo_list:list[str] = parse_csv(csv=csv_name)
         print("Issue Template: ", issue_template, "\tCSV file:", csv_name, "\tIssue title:", title)
-        gen_issue_script(template=issue_template,title=title,repo_list=repo_list)
+        gen_issue_script(template=issue_template,title=title,repo_list=repo_list,project=project,label=label)
 
     except Exception as e:
         print(e)
