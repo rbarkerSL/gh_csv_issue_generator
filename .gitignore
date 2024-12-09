@@ -1,3 +1,5 @@
 issue_gen.sh
 issue_template.md
 repos.csv
+.DS_Store
+.idea/*
