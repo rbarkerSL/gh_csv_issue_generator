@@ -32,7 +32,7 @@ def gen_issue_script(template:str, title:str, repo_list:list[str], project:str="
                 line += "\n"
                 print(line)
                 script.write(line)
-                script.write("sleep 2\n") # need sleep 2 for gh api to be happy
+                script.write("sleep 5\n") # need sleep 5 for gh api to be happy
 
         print("Generation complete. chmod to 755 to enable execution of the script")
         chmod(issue_script,0o755)
